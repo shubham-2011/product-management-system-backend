@@ -15,4 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @org.springframework.data.jpa.repository.Query("SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.shop.owner.email = :email")
     List<Product> findByCategoryIdAndShopOwnerEmail(Long categoryId, String email);
+
+    boolean existsByCategoryId(Long categoryId);
 }

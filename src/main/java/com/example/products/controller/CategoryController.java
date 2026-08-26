@@ -21,6 +21,9 @@ public class CategoryController {
     @Autowired
     private ShopRepository shopRepository;
 
+    @Autowired
+    private com.example.products.repository.ProductRepository productRepository;
+
     @GetMapping
     public List<Category> getAllCategories(Principal principal) {
         return categoryRepository.findByShopOwnerEmail(principal.getName());
@@ -62,6 +65,10 @@ public class CategoryController {
         
         if (category.getShop() != null && !category.getShop().getOwner().getEmail().equals(principal.getName())) {
             throw new RuntimeException("Access denied: You do not own this category");
+        }
+
+        if (productRepository.existsByCategoryId(id)) {
+            throw new RuntimeException("Cannot delete category: products are assigned to this category. Please reassign or delete the products first.");
         }
         
         categoryRepository.delete(category);

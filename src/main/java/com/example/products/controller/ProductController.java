@@ -149,6 +149,12 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('SHOPKEEPER')")
     public ResponseEntity<Product> createProduct(@RequestBody Product product, Principal principal) {
+        if (product.getName() == null || product.getName().trim().isEmpty()) {
+            throw new RuntimeException("Product name is required");
+        }
+        if (product.getMrp() == null || product.getMrp() <= 0) {
+            throw new RuntimeException("MRP must be greater than 0");
+        }
         if (product.getShop() != null) {
             Shop shop = shopRepository.findById(product.getShop().getId())
                     .orElseThrow(() -> new RuntimeException("Shop not found"));
@@ -170,6 +176,9 @@ public class ProductController {
             throw new RuntimeException("Access denied: You do not own this product");
         }
         
+        if (productDetails.getMrp() != null && productDetails.getMrp() > 0) {
+            product.setMrp(productDetails.getMrp());
+        }
         product.setName(productDetails.getName());
         product.setSku(productDetails.getSku());
         product.setBrand(productDetails.getBrand());
